@@ -33,11 +33,6 @@
 
 @implementation MasterViewController
 
-//- (void)awakeFromNib
-//{
-//    [super awakeFromNib];
-//}
-
 - (void)viewDidLoad
 {
     [super viewDidLoad];
