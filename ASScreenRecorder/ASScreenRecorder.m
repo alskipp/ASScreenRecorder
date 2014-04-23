@@ -234,16 +234,18 @@
         CVPixelBufferRef pixelBuffer = NULL;
         CGContextRef bitmapContext = [self createPixelBufferAndBitmapContext:&pixelBuffer];
         
-        UIGraphicsPushContext(bitmapContext); {
-            if (self.delegate) {
-                [self.delegate writeBackgroundFrameInContext:&bitmapContext];
-            }
-            // draw each window into the context (other windows include UIKeyboard, UIAlert)
-            // FIX: UIKeyboard is currently only rendered correctly in portrait orientation
-            for (UIWindow *window in [[UIApplication sharedApplication] windows]) {
-                [window drawViewHierarchyInRect:CGRectMake(0, 0, _viewSize.width, _viewSize.height) afterScreenUpdates:NO];
-            }
-        } UIGraphicsPopContext();
+        if (self.delegate) {
+            [self.delegate writeBackgroundFrameInContext:&bitmapContext];
+        }
+        // draw each window into the context (other windows include UIKeyboard, UIAlert)
+        // FIX: UIKeyboard is currently only rendered correctly in portrait orientation
+        dispatch_sync(dispatch_get_main_queue(), ^{
+            UIGraphicsPushContext(bitmapContext); {
+                for (UIWindow *window in [[UIApplication sharedApplication] windows]) {
+                                        [window drawViewHierarchyInRect:CGRectMake(0, 0, _viewSize.width, _viewSize.height) afterScreenUpdates:NO];
+                }
+            } UIGraphicsPopContext();
+        });
         
         // append pixelBuffer on a async dispatch_queue, the next frame is rendered whilst this one appends
         // must not overwhelm the queue with pixelBuffers, therefore:
