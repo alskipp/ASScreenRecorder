@@ -261,7 +261,6 @@
             CGContextRelease(bitmapContext);
             CVPixelBufferUnlockBaseAddress(pixelBuffer, 0);
             CVPixelBufferRelease(pixelBuffer);
-            NSLog(@"DISCARD");
         }
         
         dispatch_semaphore_signal(_frameRenderingSemaphore);
