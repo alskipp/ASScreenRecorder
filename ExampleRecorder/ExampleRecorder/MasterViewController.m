@@ -45,11 +45,6 @@
     for (NSUInteger i=0; i<20; i++) {
         [_colors addObject:[UIColor randomColor]];
     }
-    
-    self.navigationItem.leftBarButtonItem = self.editButtonItem;
-
-    UIBarButtonItem *addButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(insertNewObject:)];
-    self.navigationItem.rightBarButtonItem = addButton;
 }
 
 - (void)didReceiveMemoryWarning
@@ -57,7 +52,7 @@
     [super didReceiveMemoryWarning];
 }
 
-- (void)insertNewObject:(id)sender
+- (IBAction)insertNewObject:(id)sender
 {
     [_colors insertObject:[UIColor randomColor] atIndex:0];
     NSIndexPath *indexPath = [NSIndexPath indexPathForRow:0 inSection:0];
