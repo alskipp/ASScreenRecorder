@@ -8,6 +8,7 @@
 
 #import "MasterViewController.h"
 #import "DetailViewController.h"
+#import "UIViewController+ScreenRecorder.h"
 
 
 @interface UIColor (Additions)
@@ -36,8 +37,10 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-
-    _colors = [[NSMutableArray alloc] init];
+    
+    [self prepareScreenRecorder];
+    
+    _colors = [NSMutableArray array];
 
     for (NSUInteger i=0; i<20; i++) {
         [_colors addObject:[UIColor randomColor]];

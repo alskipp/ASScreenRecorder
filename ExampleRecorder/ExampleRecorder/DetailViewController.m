@@ -7,6 +7,7 @@
 //
 
 #import "DetailViewController.h"
+#import "UIViewController+ScreenRecorder.h"
 
 @implementation DetailViewController
 
@@ -26,6 +27,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    [self prepareScreenRecorder];
     [self configureView];
 }
 
