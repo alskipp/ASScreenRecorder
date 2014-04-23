@@ -27,9 +27,17 @@
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <textView key="tableHeaderView" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" bounces="NO" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" editable="NO" text="Double tap anywhere on screen to start/stop screen recording" textAlignment="center" selectable="NO" id="qoy-MK-6zP">
+                            <rect key="frame" x="0.0" y="64" width="320" height="64"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <color key="backgroundColor" red="0.2356791198" green="0.39178222419999997" blue="0.49372842909999998" alpha="1" colorSpace="calibratedRGB"/>
+                            <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                            <fontDescription key="fontDescription" type="boldSystem" pointSize="19"/>
+                            <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                        </textView>
                         <prototypes>
                             <tableViewCell contentMode="scaleToFill" selectionStyle="none" accessoryType="disclosureIndicator" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="Cell" id="m0d-ak-lc9">
-                                <rect key="frame" x="0.0" y="86" width="320" height="44"/>
+                                <rect key="frame" x="0.0" y="150" width="320" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="m0d-ak-lc9" id="d3P-M7-ByW">
                                     <rect key="frame" x="0.0" y="0.0" width="287" height="44"/>
@@ -47,10 +55,10 @@
                             <outlet property="delegate" destination="pGg-6v-bdr" id="Y6K-Cp-Qkv"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" title="Master" id="tQt-TN-PWz">
-                        <barButtonItem key="rightBarButtonItem" systemItem="add" id="mZs-mQ-p97">
+                    <navigationItem key="navigationItem" title="Master" id="1lI-9w-gv6">
+                        <barButtonItem key="rightBarButtonItem" systemItem="add" id="eKp-fg-1rT">
                             <connections>
-                                <action selector="insertNewObject:" destination="pGg-6v-bdr" id="vLW-zG-j7d"/>
+                                <action selector="insertNewObject:" destination="pGg-6v-bdr" id="qcB-9t-CYx"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
