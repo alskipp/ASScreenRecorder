@@ -21,6 +21,7 @@
 		E7C0F90A1907F1C7001B7230 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E7C0F8E61907F1C6001B7230 /* Foundation.framework */; };
 		E7C0F90B1907F1C7001B7230 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E7C0F8EA1907F1C6001B7230 /* UIKit.framework */; };
 		E7C0F92D190808D2001B7230 /* ASScreenRecorder.m in Sources */ = {isa = PBXBuildFile; fileRef = E7C0F92C190808D2001B7230 /* ASScreenRecorder.m */; };
+		E7C0F93019081312001B7230 /* UIViewController+ScreenRecorder.m in Sources */ = {isa = PBXBuildFile; fileRef = E7C0F92F19081312001B7230 /* UIViewController+ScreenRecorder.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -54,6 +55,8 @@
 		E7C0F9081907F1C7001B7230 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		E7C0F92B190808D2001B7230 /* ASScreenRecorder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ASScreenRecorder.h; path = ../ASScreenRecorder/ASScreenRecorder.h; sourceTree = "<group>"; };
 		E7C0F92C190808D2001B7230 /* ASScreenRecorder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ASScreenRecorder.m; path = ../ASScreenRecorder/ASScreenRecorder.m; sourceTree = "<group>"; };
+		E7C0F92E19081312001B7230 /* UIViewController+ScreenRecorder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIViewController+ScreenRecorder.h"; sourceTree = "<group>"; };
+		E7C0F92F19081312001B7230 /* UIViewController+ScreenRecorder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIViewController+ScreenRecorder.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -118,6 +121,8 @@
 				E7C0F8F81907F1C6001B7230 /* Main.storyboard */,
 				E7C0F8FB1907F1C6001B7230 /* MasterViewController.h */,
 				E7C0F8FC1907F1C6001B7230 /* MasterViewController.m */,
+				E7C0F92E19081312001B7230 /* UIViewController+ScreenRecorder.h */,
+				E7C0F92F19081312001B7230 /* UIViewController+ScreenRecorder.m */,
 				E7C0F8FE1907F1C6001B7230 /* DetailViewController.h */,
 				E7C0F8FF1907F1C6001B7230 /* DetailViewController.m */,
 				E7C0F9011907F1C6001B7230 /* Images.xcassets */,
@@ -246,6 +251,7 @@
 				E7C0F92D190808D2001B7230 /* ASScreenRecorder.m in Sources */,
 				E7C0F8FD1907F1C6001B7230 /* MasterViewController.m in Sources */,
 				E7C0F8F31907F1C6001B7230 /* main.m in Sources */,
+				E7C0F93019081312001B7230 /* UIViewController+ScreenRecorder.m in Sources */,
 				E7C0F9001907F1C6001B7230 /* DetailViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
