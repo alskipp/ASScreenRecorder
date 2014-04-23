@@ -245,6 +245,10 @@
             }
         } UIGraphicsPopContext();
         
+        // append pixelBuffer on a async dispatch_queue, the next frame is rendered whilst this one appends
+        // must not overwhelm the queue with pixelBuffers, therefore:
+        // check if _append_pixelBuffer_queue is ready
+        // if it’s not ready, release pixelBuffer and bitmapContext
         if (dispatch_semaphore_wait(_pixelAppendSemaphore, DISPATCH_TIME_NOW) == 0) {
             dispatch_async(_append_pixelBuffer_queue, ^{
                 BOOL success = [_avAdaptor appendPixelBuffer:pixelBuffer withPresentationTime:time];
