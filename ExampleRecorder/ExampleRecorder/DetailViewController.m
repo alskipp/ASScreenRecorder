@@ -11,30 +11,23 @@
 
 @implementation DetailViewController
 
-- (void)setColor:(UIColor *)newColor
-{
-    if (_color != newColor) {
-        _color = newColor;
-        [self configureView];
-    }
-}
-
-- (void)configureView
-{
-    self.view.backgroundColor = self.color;
-}
-
 - (void)viewDidLoad
 {
     [super viewDidLoad];
     [self prepareScreenRecorder];
-    [self configureView];
+}
+
+- (void)setColor:(UIColor *)newColor
+{
+    if (_color != newColor) {
+        _color = newColor;
+        self.view.backgroundColor = self.color;
+    }
 }
 
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 @end
