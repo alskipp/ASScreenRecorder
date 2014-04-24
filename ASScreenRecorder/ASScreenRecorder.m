@@ -106,32 +106,32 @@
     CVPixelBufferPoolCreate(NULL, NULL, (__bridge CFDictionaryRef)(bufferAttributes), &_outputBufferPool);
     
     
-	NSError* error = nil;
-	_videoWriter = [[AVAssetWriter alloc] initWithURL:self.videoURL ?: [self tempFileURL]
+    NSError* error = nil;
+    _videoWriter = [[AVAssetWriter alloc] initWithURL:self.videoURL ?: [self tempFileURL]
                                              fileType:AVFileTypeQuickTimeMovie
                                                 error:&error];
-	NSParameterAssert(_videoWriter);
-	
+    NSParameterAssert(_videoWriter);
+    
     NSInteger pixelNumber = _viewSize.width * _viewSize.height * _scale;
-	NSDictionary* videoCompression = @{AVVideoAverageBitRateKey: @(pixelNumber * 11.4)};
+    NSDictionary* videoCompression = @{AVVideoAverageBitRateKey: @(pixelNumber * 11.4)};
     
     NSDictionary* videoSettings = @{AVVideoCodecKey: AVVideoCodecH264,
                                     AVVideoWidthKey: [NSNumber numberWithInt:_viewSize.width*_scale],
                                     AVVideoHeightKey: [NSNumber numberWithInt:_viewSize.height*_scale],
                                     AVVideoCompressionPropertiesKey: videoCompression};
-	
-	_videoWriterInput = [AVAssetWriterInput assetWriterInputWithMediaType:AVMediaTypeVideo outputSettings:videoSettings];
-	NSParameterAssert(_videoWriterInput);
     
-	_videoWriterInput.expectsMediaDataInRealTime = YES;
+    _videoWriterInput = [AVAssetWriterInput assetWriterInputWithMediaType:AVMediaTypeVideo outputSettings:videoSettings];
+    NSParameterAssert(_videoWriterInput);
+    
+    _videoWriterInput.expectsMediaDataInRealTime = YES;
     _videoWriterInput.transform = [self videoTransformForDeviceOrientation];
     
     _avAdaptor = [AVAssetWriterInputPixelBufferAdaptor assetWriterInputPixelBufferAdaptorWithAssetWriterInput:_videoWriterInput sourcePixelBufferAttributes:nil];
     
-	[_videoWriter addInput:_videoWriterInput];
+    [_videoWriter addInput:_videoWriterInput];
     
-	[_videoWriter startWriting];
-	[_videoWriter startSessionAtSourceTime:CMTimeMake(0, 1000)];
+    [_videoWriter startWriting];
+    [_videoWriter startSessionAtSourceTime:CMTimeMake(0, 1000)];
 }
 
 - (CGAffineTransform)videoTransformForDeviceOrientation
@@ -156,19 +156,19 @@
 - (NSURL*)tempFileURL
 {
     NSString *outputPath = [NSHomeDirectory() stringByAppendingPathComponent:@"tmp/screenCapture.mp4"];
-	[self removeTempFilePath:outputPath];
-	return [NSURL fileURLWithPath:outputPath];
+    [self removeTempFilePath:outputPath];
+    return [NSURL fileURLWithPath:outputPath];
 }
 
 - (void)removeTempFilePath:(NSString*)filePath
 {
     NSFileManager* fileManager = [NSFileManager defaultManager];
-	if ([fileManager fileExistsAtPath:filePath]) {
-		NSError* error;
-		if ([fileManager removeItemAtPath:filePath error:&error] == NO) {
-			NSLog(@"Could not delete old recording:%@", [error localizedDescription]);
+    if ([fileManager fileExistsAtPath:filePath]) {
+        NSError* error;
+        if ([fileManager removeItemAtPath:filePath error:&error] == NO) {
+            NSLog(@"Could not delete old recording:%@", [error localizedDescription]);
         }
-	}
+    }
 }
 
 - (void)completeRecordingSession:(VideoCompletionBlock)completionBlock;
@@ -206,9 +206,9 @@
 
 - (void)cleanup
 {
-	self.avAdaptor = nil;
-	self.videoWriterInput = nil;
-	self.videoWriter = nil;
+    self.avAdaptor = nil;
+    self.videoWriterInput = nil;
+    self.videoWriter = nil;
     self.firstTimeStamp = 0;
     self.outputBufferPoolAuxAttributes = nil;
     CGColorSpaceRelease(_rgbColorSpace);
@@ -242,7 +242,7 @@
         dispatch_sync(dispatch_get_main_queue(), ^{
             UIGraphicsPushContext(bitmapContext); {
                 for (UIWindow *window in [[UIApplication sharedApplication] windows]) {
-                                        [window drawViewHierarchyInRect:CGRectMake(0, 0, _viewSize.width, _viewSize.height) afterScreenUpdates:NO];
+                    [window drawViewHierarchyInRect:CGRectMake(0, 0, _viewSize.width, _viewSize.height) afterScreenUpdates:NO];
                 }
             } UIGraphicsPopContext();
         });
