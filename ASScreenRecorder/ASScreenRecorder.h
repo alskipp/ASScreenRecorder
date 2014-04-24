@@ -17,6 +17,7 @@ typedef void (^VideoCompletionBlock)(void);
 @property (nonatomic, weak) id <ASScreenRecorderDelegate> delegate;
 
 // if saveURL is nil, video will be saved into camera roll
+// this property can not be changed whilst recording is in progress
 @property (strong, nonatomic) NSURL *videoURL;
 
 + (instancetype)sharedInstance;

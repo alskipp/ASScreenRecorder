@@ -69,6 +69,12 @@
 
 #pragma mark - public
 
+- (void)setVideoURL:(NSURL *)videoURL
+{
+    NSAssert(!_isRecording, @"videoURL can not be changed whilst recording is in progress");
+    _videoURL = videoURL;
+}
+
 - (BOOL)startRecording
 {
     if (!_isRecording) {
