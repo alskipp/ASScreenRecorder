@@ -3,6 +3,8 @@ ASScreenRecorder
 
 ASScreenRecorder is a screen recorder for iOS. It allows you to easily create demo videos of your iOS apps. It doesn't use any private APIs and is pretty easy to use. By default the video will be saved to the camera roll, though you can save to a specified file URL if you prefer.
 
+Some sample videos can be found [here](https://vimeo.com/chromophore/videos). Make sure you select HD playback to see the full quality video.
+
 
 Which files are needed?
 ---
