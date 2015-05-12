@@ -26,6 +26,11 @@ typedef void (^VideoCompletionBlock)(void);
 
 @property (nonatomic, getter = isPaused) BOOL paused;
 
+/**
+ * Default value is 60.
+ * Set this property before calling -startRecording;
+ */
+@property (nonatomic) NSInteger fps;
 
 + (instancetype)sharedInstance;
 - (BOOL)startRecording;
