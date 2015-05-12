@@ -11,6 +11,9 @@
 #import <QuartzCore/QuartzCore.h>
 #import <AssetsLibrary/AssetsLibrary.h>
 
+#define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
+#define SYSTEM_VERSION_LESS_THAN(v)                 ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] == NSOrderedAscending)
+
 @interface ASScreenRecorder()
 @property (strong, nonatomic) AVAssetWriter *videoWriter;
 @property (strong, nonatomic) AVAssetWriterInput *videoWriterInput;
@@ -19,6 +22,9 @@
 @property (strong, nonatomic) NSDictionary *outputBufferPoolAuxAttributes;
 @property (nonatomic) CFTimeInterval firstTimeStamp;
 @property (nonatomic) BOOL isRecording;
+
+@property (strong, nonatomic) NSMutableArray *pauseResumeTimeRanges;
+
 @end
 
 @implementation ASScreenRecorder
@@ -63,6 +69,7 @@
         dispatch_set_target_queue(_render_queue, dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_HIGH, 0));
         _frameRenderingSemaphore = dispatch_semaphore_create(1);
         _pixelAppendSemaphore = dispatch_semaphore_create(1);
+        _fps = 60;
     }
     return self;
 }
@@ -81,9 +88,32 @@
         [self setUpWriter];
         _isRecording = (_videoWriter.status == AVAssetWriterStatusWriting);
         _displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(writeVideoFrame)];
+        _displayLink.frameInterval = 60 / self.fps;
         [_displayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
     }
     return _isRecording;
+}
+
+- (void)pauseRecording
+{
+    if (_displayLink.paused) {
+        return;
+    }
+    
+    if (!self.pauseResumeTimeRanges) {
+        self.pauseResumeTimeRanges = [NSMutableArray new];
+    }
+    
+    [self.pauseResumeTimeRanges addObject:@(_displayLink.timestamp + 0.001)]; //adding a small delay
+    
+    _displayLink.paused = YES;
+}
+
+- (void)resumeRecording
+{
+    if (_displayLink && _displayLink.isPaused) {
+        _displayLink.paused = NO;
+    }
 }
 
 - (void)stopRecordingWithCompletion:(VideoCompletionBlock)completionBlock;
@@ -92,7 +122,18 @@
         _isRecording = NO;
         [_displayLink removeFromRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
         [self completeRecordingSession:completionBlock];
+        self.pauseResumeTimeRanges = nil;
     }
+}
+
+- (BOOL)isPaused
+{
+    return _displayLink.paused;
+}
+
+- (void)setPaused:(BOOL)paused
+{
+    [self pauseRecording];
 }
 
 #pragma mark - private
@@ -231,10 +272,21 @@
     dispatch_async(_render_queue, ^{
         if (![_videoWriterInput isReadyForMoreMediaData]) return;
         
+        if (self.pauseResumeTimeRanges.count % 2 != 0) {
+            [self.pauseResumeTimeRanges addObject:@(_displayLink.timestamp)];
+        }
+        
         if (!self.firstTimeStamp) {
             self.firstTimeStamp = _displayLink.timestamp;
         }
         CFTimeInterval elapsed = (_displayLink.timestamp - self.firstTimeStamp);
+        if (self.pauseResumeTimeRanges.count) {
+            for (int i = 0; i < self.pauseResumeTimeRanges.count; i += 2) {
+                double pausedTime = [self.pauseResumeTimeRanges[i] doubleValue];
+                double resumeTime = [self.pauseResumeTimeRanges[i+1] doubleValue];
+                elapsed -= resumeTime - pausedTime;
+            }
+        }
         CMTime time = CMTimeMakeWithSeconds(elapsed, 1000);
         
         CVPixelBufferRef pixelBuffer = NULL;
@@ -243,12 +295,20 @@
         if (self.delegate) {
             [self.delegate writeBackgroundFrameInContext:&bitmapContext];
         }
+        
+        CGFloat width = _viewSize.width;
+        CGFloat height = _viewSize.height;
+        if(SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"8") && UIInterfaceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
+            width  = MAX(_viewSize.width, _viewSize.height);
+            height = MIN(_viewSize.width, _viewSize.height);
+        }
+
         // draw each window into the context (other windows include UIKeyboard, UIAlert)
         // FIX: UIKeyboard is currently only rendered correctly in portrait orientation
         dispatch_sync(dispatch_get_main_queue(), ^{
             UIGraphicsPushContext(bitmapContext); {
                 for (UIWindow *window in [[UIApplication sharedApplication] windows]) {
-                    [window drawViewHierarchyInRect:CGRectMake(0, 0, _viewSize.width, _viewSize.height) afterScreenUpdates:NO];
+                    [window drawViewHierarchyInRect:CGRectMake(0, 0, width, height) afterScreenUpdates:NO];
                 }
             } UIGraphicsPopContext();
         });
@@ -294,6 +354,14 @@
     CGContextScaleCTM(bitmapContext, _scale, _scale);
     CGAffineTransform flipVertical = CGAffineTransformMake(1, 0, 0, -1, 0, _viewSize.height);
     CGContextConcatCTM(bitmapContext, flipVertical);
+    
+    if(SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"8") && UIInterfaceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
+        CGContextRotateCTM(bitmapContext, M_PI_2);
+        CGContextTranslateCTM(bitmapContext, 0, -_viewSize.width);
+    }
+    if(SYSTEM_VERSION_LESS_THAN(@"8") && [UIApplication sharedApplication].statusBarOrientation == UIInterfaceOrientationLandscapeLeft) {
+        CGContextRotateCTM(bitmapContext, M_PI);
+    }
     
     return bitmapContext;
 }
