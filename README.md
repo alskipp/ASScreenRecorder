@@ -46,3 +46,7 @@ Respond to UIGestureRecognizer:
 ```
 
 The included example project demonstrates the use of a UIViewController category to simplify adding ASScreenRecorder to your view controllers.
+
+* * *
+
+If you need the ability to pause and resume recording, this feature has been added by [arturdev](https://github.com/arturdev), please checkout the [development branch](https://github.com/alskipp/ASScreenRecorder/tree/development).
