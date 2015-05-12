@@ -18,6 +18,9 @@
     tapGesture.numberOfTapsRequired = 2;
     tapGesture.delaysTouchesBegan = YES;
     [self.view addGestureRecognizer:tapGesture];
+    
+    UILongPressGestureRecognizer *longGesture = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPress:)];
+    [self.view addGestureRecognizer:longGesture];
 }
 
 - (void)recorderGesture:(UIGestureRecognizer *)recognizer
@@ -32,6 +35,30 @@
     } else {
         [recorder startRecording];
         NSLog(@"Start recording");
+        [self playStartSound];
+    }
+}
+
+- (void)handleLongPress:(UILongPressGestureRecognizer *)recognizer
+{
+    ASScreenRecorder *recorder = [ASScreenRecorder sharedInstance];
+    
+    if (!recorder.isRecording) {
+        return;
+    }
+    
+    if (recognizer.state != UIGestureRecognizerStateBegan) {
+        return;
+    }
+
+    
+    if (recorder.isPaused) {
+        [recorder resumeRecording];
+        NSLog(@"Resume recording");
+        [self playStartSound];
+    } else {
+        [recorder pauseRecording];
+        NSLog(@"Pause recording");
         [self playStartSound];
     }
 }

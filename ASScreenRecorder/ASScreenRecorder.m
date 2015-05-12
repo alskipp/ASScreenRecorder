@@ -19,6 +19,9 @@
 @property (strong, nonatomic) NSDictionary *outputBufferPoolAuxAttributes;
 @property (nonatomic) CFTimeInterval firstTimeStamp;
 @property (nonatomic) BOOL isRecording;
+
+@property (strong, nonatomic) NSMutableArray *pauseResumeTimeRanges;
+
 @end
 
 @implementation ASScreenRecorder
@@ -86,13 +89,46 @@
     return _isRecording;
 }
 
+- (void)pauseRecording
+{
+    if (_displayLink.paused) {
+        return;
+    }
+    
+    if (!self.pauseResumeTimeRanges) {
+        self.pauseResumeTimeRanges = [NSMutableArray new];
+    }
+    
+    [self.pauseResumeTimeRanges addObject:@(_displayLink.timestamp + 0.001)]; //adding a small delay
+    
+    _displayLink.paused = YES;
+}
+
+- (void)resumeRecording
+{
+    if (_displayLink && _displayLink.isPaused) {
+        _displayLink.paused = NO;
+    }
+}
+
 - (void)stopRecordingWithCompletion:(VideoCompletionBlock)completionBlock;
 {
     if (_isRecording) {
         _isRecording = NO;
         [_displayLink removeFromRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
         [self completeRecordingSession:completionBlock];
+        self.pauseResumeTimeRanges = nil;
     }
+}
+
+- (BOOL)isPaused
+{
+    return _displayLink.paused;
+}
+
+- (void)setPaused:(BOOL)paused
+{
+    [self pauseRecording];
 }
 
 #pragma mark - private
@@ -231,10 +267,21 @@
     dispatch_async(_render_queue, ^{
         if (![_videoWriterInput isReadyForMoreMediaData]) return;
         
+        if (self.pauseResumeTimeRanges.count % 2 != 0) {
+            [self.pauseResumeTimeRanges addObject:@(_displayLink.timestamp)];
+        }
+        
         if (!self.firstTimeStamp) {
             self.firstTimeStamp = _displayLink.timestamp;
         }
         CFTimeInterval elapsed = (_displayLink.timestamp - self.firstTimeStamp);
+        if (self.pauseResumeTimeRanges.count) {
+            for (int i = 0; i < self.pauseResumeTimeRanges.count; i += 2) {
+                double pausedTime = [self.pauseResumeTimeRanges[i] doubleValue];
+                double resumeTime = [self.pauseResumeTimeRanges[i+1] doubleValue];
+                elapsed -= resumeTime - pausedTime;
+            }
+        }
         CMTime time = CMTimeMakeWithSeconds(elapsed, 1000);
         
         CVPixelBufferRef pixelBuffer = NULL;
