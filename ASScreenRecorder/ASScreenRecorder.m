@@ -296,16 +296,16 @@
             [self.delegate writeBackgroundFrameInContext:&bitmapContext];
         }
         
-        CGFloat width = _viewSize.width;
-        CGFloat height = _viewSize.height;
-        if(SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"8") && UIInterfaceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
-            width  = MAX(_viewSize.width, _viewSize.height);
-            height = MIN(_viewSize.width, _viewSize.height);
-        }
+        __block CGFloat width = _viewSize.width;
+        __block CGFloat height = _viewSize.height;
+        dispatch_sync(dispatch_get_main_queue(), ^{
+            if(SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"8") && UIInterfaceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
+                width  = MAX(_viewSize.width, _viewSize.height);
+                height = MIN(_viewSize.width, _viewSize.height);
+            }
 
         // draw each window into the context (other windows include UIKeyboard, UIAlert)
         // FIX: UIKeyboard is currently only rendered correctly in portrait orientation
-        dispatch_sync(dispatch_get_main_queue(), ^{
             UIGraphicsPushContext(bitmapContext); {
                 for (UIWindow *window in [[UIApplication sharedApplication] windows]) {
                     [window drawViewHierarchyInRect:CGRectMake(0, 0, width, height) afterScreenUpdates:NO];
@@ -355,14 +355,15 @@
     CGAffineTransform flipVertical = CGAffineTransformMake(1, 0, 0, -1, 0, _viewSize.height);
     CGContextConcatCTM(bitmapContext, flipVertical);
     
-    if(SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"8") && UIInterfaceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
-        CGContextRotateCTM(bitmapContext, M_PI_2);
-        CGContextTranslateCTM(bitmapContext, 0, -_viewSize.width);
-    }
-    if(SYSTEM_VERSION_LESS_THAN(@"8") && [UIApplication sharedApplication].statusBarOrientation == UIInterfaceOrientationLandscapeLeft) {
-        CGContextRotateCTM(bitmapContext, M_PI);
-    }
-    
+    dispatch_sync(dispatch_get_main_queue(), ^{
+        if(SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"8") && UIInterfaceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
+            CGContextRotateCTM(bitmapContext, M_PI_2);
+            CGContextTranslateCTM(bitmapContext, 0, -_viewSize.width);
+        }
+        if(SYSTEM_VERSION_LESS_THAN(@"8") && [UIApplication sharedApplication].statusBarOrientation == UIInterfaceOrientationLandscapeLeft) {
+            CGContextRotateCTM(bitmapContext, M_PI);
+        }
+    });
     return bitmapContext;
 }
 
