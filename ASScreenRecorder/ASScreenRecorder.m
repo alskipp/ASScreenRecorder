@@ -10,6 +10,7 @@
 #import <AVFoundation/AVFoundation.h>
 #import <QuartzCore/QuartzCore.h>
 #import <AssetsLibrary/AssetsLibrary.h>
+#import <Photos/Photos.h>
 
 @interface ASScreenRecorder()
 @property (strong, nonatomic) AVAssetWriter *videoWriter;
@@ -195,13 +196,19 @@
                 if (self.videoURL) {
                     completion();
                 } else {
-                    ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];
-                    [library writeVideoAtPathToSavedPhotosAlbum:_videoWriter.outputURL completionBlock:^(NSURL *assetURL, NSError *error) {
-                        if (error) {
-                            NSLog(@"Error copying video to camera roll:%@", [error localizedDescription]);
-                        } else {
-                            [self removeTempFilePath:_videoWriter.outputURL.path];
-                            completion();
+                    PHPhotoLibrary* lib = [PHPhotoLibrary sharedPhotoLibrary];
+                    [lib performChanges:^{
+                        PHAssetCreationRequest* req = [PHAssetCreationRequest creationRequestForAsset];
+                        [req addResourceWithType:PHAssetResourceTypeVideo fileURL:_videoWriter.outputURL options:nil];
+                        
+                    } completionHandler:^(BOOL success, NSError * _Nullable error) {
+                        if(success)
+                        {
+                            NSLog(@"file saved!");
+                        }
+                        else
+                        {
+                            NSLog(@"error \n %@",error);
                         }
                     }];
                 }
